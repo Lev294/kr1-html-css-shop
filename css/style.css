@@ -126,6 +126,13 @@ a:focus-visible {
   cursor: not-allowed;
 }
 
+.back-to-top {
+  position: fixed;
+  right: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 90;
+}
+
 /* ===============================
    4. Компоненты страницы
    =============================== */
