@@ -17,17 +17,23 @@ orderButtons.forEach((button) => {
     const productName = button.dataset.product;
 
     // Записываем название товара в скрытое поле формы.
-    selectedProductInput.value = productName;
+    if (selectedProductInput) {
+      selectedProductInput.value = productName;
+    }
 
     // Открываем модальное окно.
-    orderDialog.showModal();
+    if (orderDialog) {
+      orderDialog.showModal();
+    }
   });
 });
 
 // Закрываем модальное окно по кнопке «Закрыть».
-closeDialogButton.addEventListener('click', () => {
-  orderDialog.close();
-});
+if (closeDialogButton && orderDialog) {
+  closeDialogButton.addEventListener('click', () => {
+    orderDialog.close();
+  });
+}
 
 // Получаем форму заявки.
 const orderForm = document.getElementById('order-form');
@@ -36,39 +42,43 @@ const orderForm = document.getElementById('order-form');
 const successMessage = document.getElementById('success-message');
 
 // Обрабатываем отправку формы.
-orderForm.addEventListener('submit', (event) => {
-  // Отменяем стандартную отправку формы,
-  // потому что backend пока не подключён.
-  event.preventDefault();
+if (orderForm && successMessage) {
+  orderForm.addEventListener('submit', (event) => {
+    // Отменяем стандартную отправку формы,
+    // потому что backend пока не подключён.
+    event.preventDefault();
 
-  // Сбрасываем предыдущие признаки ошибок.
-  const formElements = Array.from(orderForm.elements);
+    // Сбрасываем предыдущие признаки ошибок.
+    const formElements = Array.from(orderForm.elements);
 
-  formElements.forEach((element) => {
-    if (element.willValidate) {
-      element.removeAttribute('aria-invalid');
-    }
-  });
-
-  // Проверяем встроенные HTML-ограничения формы.
-  if (!orderForm.checkValidity()) {
     formElements.forEach((element) => {
-      if (element.willValidate && !element.checkValidity()) {
-        element.setAttribute('aria-invalid', 'true');
+      if (element.willValidate) {
+        element.removeAttribute('aria-invalid');
       }
     });
 
-    // Показываем стандартные сообщения браузера.
-    orderForm.reportValidity();
-    return;
-  }
+    // Проверяем встроенные HTML-ограничения формы.
+    if (!orderForm.checkValidity()) {
+      formElements.forEach((element) => {
+        if (element.willValidate && !element.checkValidity()) {
+          element.setAttribute('aria-invalid', 'true');
+        }
+      });
 
-  // Показываем сообщение об успешной отправке.
-  successMessage.hidden = false;
+      // Показываем стандартные сообщения браузера.
+      orderForm.reportValidity();
+      return;
+    }
 
-  // Очищаем форму.
-  orderForm.reset();
+    // Показываем сообщение о проверке учебной формы.
+    successMessage.hidden = false;
 
-  // Закрываем модальное окно.
-  orderDialog.close();
-});
+    // Очищаем форму.
+    orderForm.reset();
+
+    // Закрываем модальное окно, если форма открыта в нём.
+    if (orderDialog) {
+      orderDialog.close();
+    }
+  });
+}
