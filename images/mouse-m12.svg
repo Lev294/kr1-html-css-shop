@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title">
+  <title id="title">Беспроводная мышь M-12</title>
+  <rect width="640" height="400" rx="32" fill="#e1f2f0"/>
+  <path d="M320 65c-72 0-110 49-110 120v57c0 64 44 100 110 100s110-36 110-100v-57c0-71-38-120-110-120Z" fill="#263e48"/>
+  <path d="M320 66v133M211 199h218" fill="none" stroke="#68838a" stroke-width="4"/>
+  <rect x="309" y="111" width="22" height="54" rx="11" fill="#36b7b3"/>
+  <rect x="452" y="276" width="32" height="44" rx="5" fill="#68838a"/>
+  <rect x="457" y="259" width="22" height="23" rx="3" fill="#263e48"/>
+</svg>

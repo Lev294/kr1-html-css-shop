@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title">
+  <title id="title">Настольный коврик S-100</title>
+  <rect width="640" height="400" rx="32" fill="#e1f2f0"/>
+  <rect x="40" y="85" width="560" height="250" rx="24" fill="#263e48"/>
+  <rect x="49" y="94" width="542" height="232" rx="18" fill="none" stroke="#68838a" stroke-width="3" stroke-dasharray="5 6"/>
+  <rect x="85" y="133" width="294" height="126" rx="12" fill="#68838a"/>
+  <path d="M105 157h253m-253 28h253m-253 28h253m-232 27h156" stroke="#d3eae8" stroke-width="12" stroke-dasharray="20 7"/>
+  <rect x="440" y="145" width="86" height="120" rx="40" fill="#36b7b3"/>
+  <path d="M483 146v42" stroke="#263e48" stroke-width="5"/>
+</svg>
