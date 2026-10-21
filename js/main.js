@@ -38,6 +38,16 @@ if (closeDialogButton && orderDialog) {
 // Получаем форму заявки.
 const orderForm = document.getElementById('order-form');
 
+// Карточка товара передаёт код модели в ссылке на страницу заказа.
+const productSelect = document.getElementById('order-product');
+if (productSelect) {
+  const productCode = new URLSearchParams(window.location.search).get('product');
+  const productOption = Array.from(productSelect.options).find((option) => option.dataset.code === productCode);
+  if (productOption) {
+    productSelect.value = productOption.value;
+  }
+}
+
 // Получаем сообщение об успешной отправке.
 const successMessage = document.getElementById('success-message');
 

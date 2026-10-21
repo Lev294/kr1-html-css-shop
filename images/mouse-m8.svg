@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title">
+  <title id="title">Эргономичная мышь M-8</title>
+  <rect width="640" height="400" rx="32" fill="#e1f2f0"/>
+  <path d="M350 63c-70-13-110 29-125 99l-24 91c-13 55 25 90 105 90 96 0 143-46 132-120l-14-80c-7-44-32-73-74-80Z" fill="#263e48"/>
+  <path d="m344 69-27 125-94-20m94 20 113 10" fill="none" stroke="#68838a" stroke-width="4"/>
+  <rect x="326" y="113" width="22" height="50" rx="10" fill="#36b7b3" transform="rotate(12 337 138)"/>
+  <path d="M231 235q44-21 58 25t-38 63" fill="#47616b"/>
+</svg>

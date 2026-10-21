@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title">
+  <title id="title">USB-C хаб H-6</title>
+  <rect width="640" height="400" rx="32" fill="#e1f2f0"/>
+  <path d="M170 192H97q-31 0-31-34v-42" fill="none" stroke="#263e48" stroke-width="13"/>
+  <rect x="53" y="75" width="26" height="51" rx="7" fill="#68838a"/>
+  <rect x="56" y="63" width="20" height="21" rx="4" fill="#263e48"/>
+  <rect x="166" y="130" width="380" height="140" rx="22" fill="#68838a"/>
+  <rect x="184" y="149" width="344" height="102" rx="12" fill="#263e48"/>
+  <g fill="#a8e8e6"><rect x="204" y="181" width="58" height="20" rx="3"/><rect x="280" y="181" width="58" height="20" rx="3"/><rect x="356" y="181" width="58" height="20" rx="3"/><rect x="437" y="179" width="62" height="26" rx="5"/></g>
+  <circle cx="504" cy="229" r="4" fill="#36b7b3"/>
+</svg>

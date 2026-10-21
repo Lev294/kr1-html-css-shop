@@ -32,14 +32,29 @@
         <h1 class="page-intro__title">Клавиатура K-87</h1>
       </div>
       <div class="product-detail">
-        <figure class="product-detail__visual">
-          <img class="product-detail__image" src="images/keyboard-k87.svg" alt="Схематичное изображение компактной клавиатуры K-87" width="640" height="400">
-        </figure>
+        <div class="product-detail__gallery">
+          <figure class="product-detail__visual">
+            <img class="product-detail__image" src="images/keyboard-k87.svg" alt="Клавиатура K-87 с графитовым корпусом и бирюзовыми клавишами, вид сверху" width="640" height="400" decoding="async" fetchpriority="high">
+            <figcaption class="product-detail__caption">Вид сверху</figcaption>
+          </figure>
+          <figure class="product-detail__visual product-detail__visual--secondary">
+            <img class="product-detail__image" src="images/keyboard-k87-side.svg" alt="Боковой профиль K-87: наклон корпуса и разъём USB-C" width="640" height="400" loading="lazy" decoding="async">
+            <figcaption class="product-detail__caption">Боковой вид и разъём подключения</figcaption>
+          </figure>
+        </div>
         <div class="product-detail__info">
-          <h2>Описание</h2>
-          <p>Компактная механическая клавиатура с 87 клавишами для удобного размещения на рабочем столе. Проводное подключение через USB-C.</p>
+          <p class="product-detail__model">Модель K-87 · формат TKL</p>
+          <h2 class="product-detail__title">Компактная механическая клавиатура</h2>
+          <p>Модель с 87 клавишами сохраняет функциональный ряд и отдельные стрелки. Отсутствие цифрового блока освобождает место для мыши.</p>
+          <ul class="product-detail__features">
+            <li>Механические переключатели.</li>
+            <li>Русская и английская раскладки.</li>
+            <li>Съёмный кабель USB-A → USB-C.</li>
+            <li>Наклонный корпус для рабочего стола.</li>
+          </ul>
           <p class="product-detail__price">4 900 ₽</p>
-          <a class="button button--primary" href="order.html">Оформить заявку</a>
+          <a class="button button--primary" href="order.html?product=K-87">Оформить заявку на K-87</a>
+          <p class="product-detail__note">В форме заказа модель будет выбрана автоматически.</p>
         </div>
       </div>
     </article>
@@ -48,11 +63,24 @@
       <table class="specs-table">
         <tbody>
           <tr><th scope="row">Тип</th><td>Механическая</td></tr>
+          <tr><th scope="row">Формат</th><td>TKL, без цифрового блока</td></tr>
           <tr><th scope="row">Количество клавиш</th><td>87</td></tr>
+          <tr><th scope="row">Раскладка</th><td>Русская / английская</td></tr>
           <tr><th scope="row">Подключение</th><td>Проводное, USB-C</td></tr>
-          <tr><th scope="row">Цвет</th><td>Графитовый</td></tr>
+          <tr><th scope="row">Кабель</th><td>Съёмный, USB-A → USB-C, 1,5 м</td></tr>
+          <tr><th scope="row">Цвет</th><td>Графитовый с бирюзовыми акцентами</td></tr>
+          <tr><th scope="row">Размеры</th><td>360 × 135 × 35 мм</td></tr>
         </tbody>
       </table>
+    </section>
+    <section class="section">
+      <h2 class="section__title">Комплект поставки</h2>
+      <ul>
+        <li>Клавиатура K-87.</li>
+        <li>Кабель USB-A → USB-C длиной 1,5 м.</li>
+        <li>Краткая инструкция по подключению.</li>
+      </ul>
+      <a href="keyboards.html">Сравнить с другими клавиатурами в категории →</a>
     </section>
   </main>
   <footer class="site-footer"><div class="site-footer__inner">
@@ -60,6 +88,6 @@
     <p>Дисциплина: Фронтенд и бэкенд разработка</p>
     <p><a href="catalog.html">Каталог</a> · <a href="contacts.html">Контакты</a></p>
   </div></footer>
-  <a class="button button--primary back-to-top" href="#top">Наверх</a>
+  <a class="button button--primary back-to-top" href="#top" aria-label="Вернуться к началу страницы"><span aria-hidden="true">↑</span> Наверх</a>
 </body>
 </html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title">
+  <title id="title">Боковой вид клавиатуры K-87</title>
+  <rect width="640" height="400" rx="32" fill="#e1f2f0"/>
+  <path d="M63 238 560 196l19 70H63Z" fill="#263e48"/>
+  <path d="m72 219 476-40 12 17-497 42Z" fill="#68838a"/>
+  <path d="m89 214 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2m14-1 23-2" stroke="#e6f0f1" stroke-width="17" stroke-linecap="round"/>
+  <rect x="481" y="225" width="32" height="13" rx="6" fill="#36b7b3"/>
+  <path d="M91 268v10m435-10v10" stroke="#172631" stroke-width="18"/>
+</svg>
