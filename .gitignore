@@ -6,3 +6,7 @@ Thumbs.db
 *.temp
 .env
 .env.*
+/node_modules/
+/dist/
+/.ssr/
+/var/

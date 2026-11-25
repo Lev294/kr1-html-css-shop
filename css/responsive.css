@@ -1,0 +1,43 @@
+/* Mobile First: базовая раскладка в style.css рассчитана на одну колонку. */
+@media (min-width: 34rem) {
+  :root { --gutter: 1.5rem; }
+  .form-grid, .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .site-footer__inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 47.5rem) {
+  :root { --section-space: 3.75rem; }
+  .hero { grid-template-columns: minmax(0, 46fr) minmax(0, 54fr); min-height: 25rem; align-items: stretch; }
+  .hero__copy { align-self: center; padding: clamp(1.5rem, 4vw, 3.4rem); }
+  .hero__media { position: relative; }
+  .hero__media img { position: absolute; inset: 0; height: 100%; }
+  .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #171f2e, transparent 26%); pointer-events: none; }
+  .category-grid, .advice__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .main-content--home .products-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .product-detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .form-layout { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .panel--about { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+  .products-grid--compact { grid-template-columns: minmax(0, 1fr); }
+  .product-card--compact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr); }
+  .product-card--compact > img { height: 100%; border-bottom: 0; border-right: 1px solid var(--line); }
+  .site-footer__inner { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .85fr); gap: 1.5rem; }
+}
+
+@media (min-width: 58rem) {
+  .menu-toggle { display: none; }
+  .site-nav, .site-nav[data-open="true"] { display: block; flex: 0 1 auto; max-height: none; overflow: visible; }
+  .site-nav .site-nav__list { display: flex; align-items: center; flex-wrap: wrap; gap: .25rem; padding: 0; }
+  .main-content--home { padding-top: 2rem; }
+  .catalog-layout { grid-template-columns: 12rem minmax(0, 1fr); gap: 1.5rem; }
+  .catalog-filters { position: sticky; top: 5.25rem; }
+  .catalog-filters ul { display: grid; }
+  .catalog-filters a { padding-inline: .65rem; }
+}
+
+@media (min-width: 75rem) {
+  :root { --gutter: 2rem; }
+  .hero { min-height: 27rem; }
+  .products-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; }
+  .products-grid--compact { grid-template-columns: minmax(0, 1fr); }
+  .product-card__body { padding: 1.2rem; }
+}
