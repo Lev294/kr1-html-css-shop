@@ -25,7 +25,7 @@ function SectionHeading({ id, title, children }) {
 function DeskPhoto() {
   return <picture className="desk-photo">
     <source media="(min-width: 760px)" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-      sizes="(min-width: 1280px) 540px, 47vw" />
+      sizes="(min-width: 1280px) 620px, 50vw" />
     <img src="images/desk-640.webp" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
       sizes="100vw" alt="Клавиатура и мышь на рабочем столе"
       width="1280" height="854" fetchPriority="high" />
@@ -46,9 +46,8 @@ function ProductImage({ product, eager = false }) {
 
 function ProductCard({ product, onQuickOrder }) {
   const category = categories.find((item) => item.id === product.category);
-  const variant = product.variant === "featured" ? "yellow" : product.variant === "dark" ? "muted" : "default";
   return <article className="product-card">
-    <Card padding={0} variant={variant} className="product-card__frame">
+    <Card padding={0} className="product-card__frame">
       <ProductImage product={product} />
       <div className="product-card__body">
         <p className="product-card__category">{category.name}</p>
@@ -170,7 +169,7 @@ export function HomePage({ products }) {
           <Button label="Как выбрать" href="#guide" size="lg" variant="secondary" />
         </div>
       </div>
-      <DeskPhoto />
+      <div className="hero__visual"><DeskPhoto /></div>
     </section>
 
     <section className="section section--categories" id="advantages" aria-labelledby="categories-title">
