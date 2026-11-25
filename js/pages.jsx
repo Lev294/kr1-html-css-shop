@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
 import { Tab, TabList } from "@astryxdesign/core/TabList";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import {
-  calculateDiscount, calculateFinalPrice, categories, categoryURL, createProductSummary,
+  calculateDiscount, calculateFinalPrice, categories, categoryURL,
   formatPrice, getProductStatus, orderURL, productURL,
 } from "./data.js";
 import { buyingTips, orderFAQ, orderSteps, productTips, setups, storeFAQ } from "./content.js";
 import { ContactLinks, Icon } from "./layout.jsx";
-import { QuickOrder, RequestForm } from "./forms.jsx";
+import { RequestForm, staticOnly } from "./forms.jsx";
 
 function PageIntro({ title, children }) {
   return <div className="page-intro">
@@ -24,11 +24,8 @@ function SectionHeading({ id, title, children }) {
 
 function DeskPhoto() {
   return <picture className="desk-photo">
-    <source media="(min-width: 760px)" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-      sizes="(min-width: 1280px) 620px, 50vw" />
     <img src="images/desk-640.webp" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-      sizes="100vw" alt="Клавиатура и мышь на рабочем столе"
-      width="1280" height="854" fetchPriority="high" />
+      sizes="(min-width: 1280px) 1200px, 100vw" alt="" width="1280" height="854" fetchPriority="high" />
   </picture>;
 }
 
@@ -40,15 +37,17 @@ function Price({ product }) {
 }
 
 function ProductImage({ product, eager = false }) {
-  return <img className="product-image" src={product.image} alt={product.alt} width="640" height="400"
+  return <img className="product-image" src={product.image} alt={product.alt} width="960" height="720"
     loading={eager ? undefined : "lazy"} fetchPriority={eager ? "high" : undefined} decoding="async" />;
 }
 
-function ProductCard({ product, onQuickOrder }) {
+function ProductCard({ product }) {
   const category = categories.find((item) => item.id === product.category);
   return <article className="product-card">
     <Card padding={0} className="product-card__frame">
-      <ProductImage product={product} />
+      <a className="product-card__media" href={productURL(product)} aria-label={`Открыть карточку товара «${product.name}»`}>
+        <ProductImage product={product} />
+      </a>
       <div className="product-card__body">
         <p className="product-card__category">{category.name}</p>
         <h3>{product.name}</h3>
@@ -59,11 +58,8 @@ function ProductCard({ product, onQuickOrder }) {
           <div className="actions">
             <Button variant="secondary" href={productURL(product)}
               label={`Подробнее о товаре «${product.name}»`}>Подробнее</Button>
-            {product.inStock && (onQuickOrder
-              ? <Button variant="primary" label={`Заказать «${product.name}»`}
-                  onClick={() => onQuickOrder(product.code)}>Заказать</Button>
-              : <Button variant="primary" href={orderURL(product)}
-                  label={`Заказать «${product.name}»`}>Заказать</Button>)}
+            {product.inStock && <Button variant="primary" href={orderURL(product)}
+              label={`Заказать «${product.name}»`}>Заказать</Button>}
           </div>
         </div>
       </div>
@@ -71,9 +67,9 @@ function ProductCard({ product, onQuickOrder }) {
   </article>;
 }
 
-function ProductGrid({ products, onQuickOrder, related = false }) {
+function ProductGrid({ products, related = false }) {
   return <div className={related ? "products-grid products-grid--related" : "products-grid"}>
-    {products.map((product) => <ProductCard key={product.code} product={product} onQuickOrder={onQuickOrder} />)}
+    {products.map((product) => <ProductCard key={product.code} product={product} />)}
   </div>;
 }
 
@@ -138,10 +134,10 @@ function SetupGuide({ products }) {
   </section>;
 }
 
-function OrderSteps() {
-  return <section className="section" aria-labelledby="steps-title">
-    <SectionHeading id="steps-title" title="Как проходит заявка">
-      <Button variant="secondary" href="order.html" label="Открыть заявку" />
+function OrderSteps({ showAction = false }) {
+  return <section className="section order-steps" id="how-to-order" aria-labelledby="steps-title">
+    <SectionHeading id="steps-title" title="Как оформить заказ">
+      {showAction && <Button variant="secondary" href="order.html" label="Оформить заявку" endContent={<Icon name="arrow" size={17} />} />}
     </SectionHeading>
     <ol className="steps">
       {orderSteps.map(({ title, text }) => <li key={title}><h3>{title}</h3><p>{text}</p></li>)}
@@ -150,38 +146,31 @@ function OrderSteps() {
 }
 
 export function HomePage({ products }) {
-  const dialog = useRef(null);
-  const [selected, setSelected] = useState("");
   const featured = products.filter((product) => ["K-87", "M-12", "H-6"].includes(product.code));
-
-  function openOrder(code) {
-    setSelected(code);
-    dialog.current.showModal();
-  }
 
   return <>
     <section className="hero hero--home" aria-labelledby="home-title">
+      <div className="hero__visual"><DeskPhoto /></div>
       <div className="hero__copy">
-        <h1 id="home-title">Всё для <span>рабочего стола</span></h1>
-        <p>Подберите клавиатуру, мышь и аксессуары под свой стол. Сравните размеры, подключение и комплектацию перед выбором.</p>
+        <h1 id="home-title">Клавиатуры, мыши и <span>аксессуары</span></h1>
+        <p>Подберите технику для работы, учёбы или игр. Посмотрите фотографии и характеристики, затем оформите заявку на выбранную модель.</p>
         <div className="actions">
           <Button label="Смотреть каталог" href="catalog.html" size="lg" variant="primary" endContent={<Icon name="arrow" size={18} />} />
-          <Button label="Как выбрать" href="#guide" size="lg" variant="secondary" />
+          <Button label="Как заказать" href="#how-to-order" size="lg" variant="secondary" />
         </div>
       </div>
-      <div className="hero__visual"><DeskPhoto /></div>
     </section>
 
     <section className="section section--categories" id="advantages" aria-labelledby="categories-title">
-      <SectionHeading id="categories-title" title="Категории" />
+      <SectionHeading id="categories-title" title="Выберите категорию" />
       <ul className="category-grid">
         {categories.map((category) => <li key={category.id}>
           <a className="category-link" href={categoryURL(category.id)}>
-            <img className="category-link__photo" src={category.image} alt="" width="640" height="400" loading="lazy" decoding="async" />
             <span className="category-link__caption">
               <span className="category-link__label"><strong>{category.name}</strong><span>{category.description}</span></span>
               <span className="category-link__arrow"><Icon name="arrow" size={19} /></span>
             </span>
+            <img className="category-link__photo" src={category.image} alt="" width="960" height="720" loading="lazy" decoding="async" />
           </a>
         </li>)}
       </ul>
@@ -191,17 +180,16 @@ export function HomePage({ products }) {
       <SectionHeading id="popular-title" title="Популярные товары">
         <Button variant="secondary" href="catalog.html" label="Весь каталог" endContent={<Icon name="arrow" size={17} />} />
       </SectionHeading>
-      <ProductGrid products={featured} onQuickOrder={openOrder} />
+      <ProductGrid products={featured} />
     </section>
 
+    <OrderSteps showAction />
     <SetupGuide products={products} />
     <section className="section buying-guide" aria-labelledby="buying-title">
       <SectionHeading id="buying-title" title="Что проверить перед покупкой" />
       <InfoCards items={buyingTips} />
     </section>
-    <OrderSteps />
     <FAQ items={storeFAQ} />
-    <QuickOrder products={products} dialog={dialog} selected={selected} />
   </>;
 }
 
@@ -237,7 +225,7 @@ export function CatalogPage({ products }) {
       <Card padding={0} className="catalog-controls">
         <div className="catalog-search" role="search" aria-label="Поиск по каталогу">
           <TextInput id="catalog-search" label="Поиск по каталогу" type="search" value={query}
-            onChange={setQuery} startIcon={<Icon name="search" />} placeholder="Например, K-87"
+            onChange={setQuery} startIcon={<Icon name="search" />} placeholder="Название или код товара"
             maxLength={100} width="100%" size="lg" hasClear />
         </div>
         <SectionTabs id="category" label="Категории каталога" items={catalogTabs} active={active} onChange={setActive}>
@@ -263,32 +251,13 @@ export function CatalogPage({ products }) {
 }
 
 export function ProductPage({ product, products }) {
-  const summary = useRef(null);
   const category = categories.find((item) => item.id === product.category);
   const related = products.filter((item) => item.category === product.category && item.code !== product.code);
-
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("practice") !== "15") return;
-    summary.current.textContent = createProductSummary(product);
-    summary.current.hidden = false;
-    console.table({
-      "Цена": formatPrice(product.price),
-      "Скидка": formatPrice(calculateDiscount(product)),
-      "Итого": formatPrice(calculateFinalPrice(product)),
-      "Статус": getProductStatus(product),
-      "Описание": createProductSummary(product),
-    });
-  }, [product]);
 
   return <>
     <div className="product-detail">
       <div className="product-detail__gallery">
         <ProductImage product={product} eager />
-        {product.code === "K-87" && <figure>
-          <img className="product-image" src="images/keyboard-k87-side.svg"
-            alt="Схема корпуса клавиатуры в профиль и разъёма USB-C" width="640" height="400" loading="lazy" decoding="async" />
-          <figcaption>Схема корпуса и разъёма подключения</figcaption>
-        </figure>}
       </div>
       <Card className="product-detail__info" padding={6}>
         <a className="text-link" href={categoryURL(category.id)}>{category.name}</a>
@@ -301,7 +270,6 @@ export function ProductPage({ product, products }) {
           {product.inStock && <Button variant="primary" size="lg" href={orderURL(product)} label="Оформить заявку"
             endContent={<Icon name="arrow" size={18} />} />}
         </div>
-        <p className="notice" ref={summary} hidden />
       </Card>
     </div>
     <section className="section" aria-labelledby="specs-title">
@@ -336,7 +304,9 @@ export function ProductPage({ product, products }) {
 
 export function OrderPage({ products }) {
   return <>
-    <PageIntro title="Оформить заявку">Выберите модель и оставьте контакты. По заявке можно уточнить характеристики товара и способ связи.</PageIntro>
+    <PageIntro title="Оформить заявку">{staticOnly
+      ? "Выберите модель, заполните контакты и сохраните заявку в файл."
+      : "Выберите модель, оставьте контакты и отправьте заявку. После отправки вы получите её номер."}</PageIntro>
     <div className="form-layout">
       <section aria-labelledby="order-form-title">
         <Card padding={6} className="form-panel">
@@ -348,14 +318,13 @@ export function OrderPage({ products }) {
         <Card variant="muted" padding={6} className="form-help">
           <h2>Нужна помощь с выбором?</h2>
           <p>Напишите, если сомневаетесь в размере, подключении или комплектации. Код модели из карточки поможет найти нужный товар.</p>
-          <ContactLinks />
           <Button variant="secondary" href="about.html#feedback" label="Обратная связь" />
         </Card>
       </aside>
     </div>
     <OrderSteps />
     <section className="section" aria-labelledby="before-order-title">
-      <SectionHeading id="before-order-title" title="Перед отправкой" />
+      <SectionHeading id="before-order-title" title="Перед оформлением" />
       <InfoCards items={[
         { title: "Сверьте модель", text: "У похожих клавиатур может быть разный формат. Сверьте буквенно-цифровой код в заявке с кодом на странице товара." },
         { title: "Укажите удобное время", text: "Если в течение дня вы заняты, напишите в комментарии, в какое время вам удобно обсудить заявку." },
@@ -404,7 +373,6 @@ export function AboutPage() {
             <li>Модель компьютера и доступные разъёмы, если нужна помощь с подключением.</li>
             <li>Номер заявки, если она уже отправлена.</li>
           </ul>
-          <p>Контактные данные приведены для демонстрации магазина.</p>
         </Card>
       </aside>
     </section>

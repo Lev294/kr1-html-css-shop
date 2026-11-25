@@ -15,11 +15,25 @@
   .site-nav__link { font-size: .94rem; padding-inline: .85rem; }
   .main-content--home { padding-top: 1.8rem; }
   .hero { grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: clamp(1.7rem, 4vw, 4.2rem); }
-  .hero--home { gap: 0; grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr); }
-  .hero__visual::before {
-    clip-path: polygon(18% 0, calc(100% - var(--corner)) 0, 100% var(--corner), 100% 100%, 0 100%);
+  .hero--home .hero__copy {
+    width: 56%;
+    padding: clamp(2.2rem, 4.8vw, 4.7rem);
   }
-  .hero--home .desk-photo img { min-height: 27rem; aspect-ratio: auto; }
+  .hero__visual { inset: 0; }
+  .hero__visual::before {
+    background: linear-gradient(90deg, var(--dark-surface), rgb(10 41 36 / .98) 33%, rgb(10 41 36 / .49) 66%, rgb(10 41 36 / .13));
+  }
+  .hero__visual::after {
+    clip-path: polygon(76% 0, 100% 0, 100% 70%, 57% 100%, 43% 100%, 63% 54%);
+  }
+  .hero--home::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    content: "";
+    background: rgb(104 200 220 / .23);
+    clip-path: polygon(82% 0, 100% 0, 100% 22%, 59% 77%);
+  }
   .category-grid, .info-grid, .contact-links--cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
