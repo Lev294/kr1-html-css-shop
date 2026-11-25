@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@astryxdesign/core/Button";
 import { navigation } from "./routes.js";
 
 const icons = {
@@ -7,10 +8,10 @@ const icons = {
   mice: <><rect x="6" y="2" width="12" height="20" rx="6" /><path d="M12 6v4" /></>,
   accessories: <><path d="m12 3 9 5-9 5-9-5 9-5ZM3 8v8l9 5 9-5V8M12 13v8" /></>,
   arrow: <path d="M4 12h15m-6-6 6 6-6 6" />,
-  menu: <path d="M4 6h16M4 12h16M4 18h16" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   mail: <><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m3 6 9 7 9-7" /></>,
   phone: <path d="m5 3 4 1 1 5-2 2a15 15 0 0 0 5 5l2-2 5 1 1 4c0 2-2 2-3 2C10 20 4 14 3 6c0-1 0-3 2-3Z" />,
+  clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
   search: <><circle cx="10.5" cy="10.5" r="5.5" /><path d="m15 15 4 4" /></>,
 };
 
@@ -24,38 +25,30 @@ function Brand() {
   return <a className="brand" href="index.html"><span className="brand__mark"><Icon name="brand" size={23} /></span><span>ShopProject</span></a>;
 }
 
-function Navigation({ route, onClick }) {
-  return <ul className="site-nav__list">{navigation.map(([href, label]) => (
-    <li key={href}><a className="site-nav__link" href={href}
-      aria-current={route.file === href ? "page" : undefined} onClick={onClick}>{label}</a></li>
-  ))}</ul>;
+function Navigation({ route }) {
+  return <ul className="site-nav__list">
+    {navigation.map(([href, label]) => {
+      const current = route.file === href ? "page"
+        : route.view === "product" && href === "catalog.html" ? "location" : undefined;
+      return <li key={href}><a className="site-nav__link" href={href} aria-current={current}>{label}</a></li>;
+    })}
+  </ul>;
 }
 
 export function Header({ route }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButton = useRef(null);
-
-  function closeOnEscape(event) {
-    if (event.key === "Escape" && menuOpen) {
-      setMenuOpen(false);
-      menuButton.current.focus();
-    }
-  }
-
   return <>
     <a className="skip-link" href="#main">Перейти к содержимому</a>
     <div id="top" />
-    <header className="site-header" onKeyDown={closeOnEscape}>
+    <header className="site-header">
       <div className="container site-header__inner">
         <Brand />
-        <button ref={menuButton} className="menu-toggle button button--secondary" type="button"
-          aria-controls="main-nav" aria-expanded={menuOpen}
-          onClick={() => setMenuOpen(!menuOpen)}>
-          <Icon name={menuOpen ? "close" : "menu"} /> Меню
-        </button>
-        <nav className="site-nav" id="main-nav" aria-label="Основная навигация" data-open={menuOpen}>
-          <Navigation route={route} onClick={() => setMenuOpen(false)} />
+        <nav className="site-nav" aria-label="Основная навигация">
+          <Navigation route={route} />
         </nav>
+        <div className="site-header__order">
+          <Button href="order.html" label="Заявка" variant="primary"
+            aria-current={route.view === "order" ? "page" : undefined} />
+        </div>
       </div>
     </header>
   </>;
@@ -71,10 +64,23 @@ export function Breadcrumbs({ route }) {
   </nav>;
 }
 
-export function ContactLinks() {
-  return <ul className="contact-links">
-    <li><Icon name="phone" size={17} /><a href="tel:+79000000000">+7 (900) 000-00-00</a></li>
-    <li><Icon name="mail" size={17} /><a href="mailto:info@example.com">info@example.com</a></li>
+const contacts = [
+  { icon: "phone", label: "Телефон", text: "+7 (900) 000-00-00", href: "tel:+79000000000" },
+  { icon: "clock", label: "Часы работы", text: "Ежедневно, 10:00–20:00 МСК" },
+  { icon: "mail", label: "Электронная почта", text: "info@example.com", href: "mailto:info@example.com" },
+];
+
+export function ContactLinks({ cards = false }) {
+  return <ul className={cards ? "contact-links contact-links--cards" : "contact-links"}>
+    {contacts.map(({ icon, label, text, href }) => (
+      <li key={icon}>
+        <span className="contact-links__icon"><Icon name={icon} size={18} /></span>
+        <div>
+          {cards && <strong>{label}</strong>}
+          {href ? <a href={href}>{text}</a> : <span>{text}</span>}
+        </div>
+      </li>
+    ))}
   </ul>;
 }
 
@@ -109,5 +115,7 @@ export function BackToTop() {
     return () => window.removeEventListener("scroll", updateVisibility);
   }, []);
 
-  return <a className="back-to-top button button--secondary" href="#top" hidden={!visible}>Наверх</a>;
+  return <div className="back-to-top" hidden={!visible}>
+    <Button href="#top" label="Наверх" variant="secondary" elevation="low" />
+  </div>;
 }

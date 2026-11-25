@@ -8,6 +8,10 @@ export const categories = [
   { id: "accessories", name: "Аксессуары", description: "Хабы, коврики и микрофоны" },
 ];
 
+export function categoryURL(id) {
+  return `catalog.html?category=${id}#products`;
+}
+
 const rubles = new Intl.NumberFormat("ru-RU", {
   style: "currency", currency: "RUB", maximumFractionDigits: 0,
 });

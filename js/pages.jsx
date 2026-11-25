@@ -1,16 +1,35 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@astryxdesign/core/Button";
+import { Card } from "@astryxdesign/core/Card";
+import { Tab, TabList } from "@astryxdesign/core/TabList";
+import { TextInput } from "@astryxdesign/core/TextInput";
 import {
-  calculateDiscount, calculateFinalPrice, categories, createProductSummary,
+  calculateDiscount, calculateFinalPrice, categories, categoryURL, createProductSummary,
   formatPrice, getProductStatus, orderURL, productURL,
 } from "./data.js";
+import { buyingTips, orderFAQ, orderSteps, productTips, setups, storeFAQ } from "./content.js";
 import { ContactLinks, Icon } from "./layout.jsx";
 import { QuickOrder, RequestForm } from "./forms.jsx";
 
 function PageIntro({ title, children }) {
   return <div className="page-intro">
     <h1>{title}</h1>
-    {children && <p>{children}</p>}
+    <p>{children}</p>
   </div>;
+}
+
+function SectionHeading({ id, title, children }) {
+  return <div className="section-heading"><h2 id={id}>{title}</h2>{children}</div>;
+}
+
+function DeskPhoto() {
+  return <picture className="desk-photo">
+    <source media="(min-width: 760px)" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
+      sizes="(min-width: 1280px) 540px, 47vw" />
+    <img src="images/desk-640.webp" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
+      sizes="100vw" alt="Графитовая клавиатура и беспроводная мышь на настольном коврике"
+      width="1280" height="854" fetchPriority="high" />
+  </picture>;
 }
 
 function Price({ product }) {
@@ -25,31 +44,110 @@ function ProductImage({ product, eager = false }) {
     loading={eager ? undefined : "lazy"} fetchPriority={eager ? "high" : undefined} decoding="async" />;
 }
 
-function ProductCard({ product, onQuickOrder, compact = false }) {
+function ProductCard({ product, onQuickOrder }) {
   const category = categories.find((item) => item.id === product.category);
-  const variant = product.variant ? ` product-card--${product.variant}` : "";
-  return <article className={`product-card${variant}${compact ? " product-card--compact" : ""}`}>
-    <ProductImage product={product} />
-    <div className="product-card__body">
-      <p className="product-card__category">{category.name}</p>
-      <h3>{product.name}</h3>
-      <p className="product-card__description">{product.description}</p>
-      <ul className="product-card__specs">{product.specs.map((spec) => <li key={spec}>{spec}</li>)}</ul>
-      <div className="product-card__actions">
-        <Price product={product} />
-        <div className="actions">
-          <a className="button button--secondary" href={productURL(product)}
-            aria-label={`Подробнее о товаре «${product.name}»`}>Подробнее</a>
-          {onQuickOrder && product.inStock && <button className="button button--primary" type="button"
-            aria-label={`Заказать «${product.name}»`} onClick={() => onQuickOrder(product.code)}>Заказать</button>}
+  const variant = product.variant === "featured" ? "yellow" : product.variant === "dark" ? "muted" : "default";
+  return <article className="product-card">
+    <Card padding={0} variant={variant} className="product-card__frame">
+      <ProductImage product={product} />
+      <div className="product-card__body">
+        <p className="product-card__category">{category.name}</p>
+        <h3>{product.name}</h3>
+        <p className="product-card__description">{product.description}</p>
+        <ul className="product-card__specs">{product.specs.map((spec) => <li key={spec}>{spec}</li>)}</ul>
+        <div className="product-card__actions">
+          <Price product={product} />
+          <div className="actions">
+            <Button variant="secondary" href={productURL(product)}
+              label={`Подробнее о товаре «${product.name}»`}>Подробнее</Button>
+            {product.inStock && (onQuickOrder
+              ? <Button variant="primary" label={`Заказать «${product.name}»`}
+                  onClick={() => onQuickOrder(product.code)}>Заказать</Button>
+              : <Button variant="primary" href={orderURL(product)}
+                  label={`Заказать «${product.name}»`}>Заказать</Button>)}
+          </div>
         </div>
       </div>
-    </div>
+    </Card>
   </article>;
 }
 
-function categoryURL(category) {
-  return category.id === "keyboards" ? "keyboards.html" : `catalog.html#${category.id}`;
+function ProductGrid({ products, onQuickOrder, related = false }) {
+  return <div className={related ? "products-grid products-grid--related" : "products-grid"}>
+    {products.map((product) => <ProductCard key={product.code} product={product} onQuickOrder={onQuickOrder} />)}
+  </div>;
+}
+
+function InfoCards({ items }) {
+  return <div className="info-grid">
+    {items.map(({ title, text }) => <Card key={title} className="info-card">
+      <h3>{title}</h3><p>{text}</p>
+    </Card>)}
+  </div>;
+}
+
+function FAQ({ items }) {
+  return <section className="section" aria-labelledby="faq-title">
+    <SectionHeading id="faq-title" title="Частые вопросы" />
+    <div className="faq">
+      {items.map(([question, answer], index) => <details key={question} open={index === 0}>
+        <summary>{question}</summary>
+        <p>{answer}</p>
+      </details>)}
+    </div>
+  </section>;
+}
+
+function SectionTabs({ id, label, items, active, onChange, children }) {
+  return <>
+    <TabList value={active} onChange={onChange} role="tablist" aria-label={label} size="lg" hasDivider>
+      {items.map((item) => <Tab key={item.id} id={`${id}-tab-${item.id}`}
+        value={item.id} label={item.label} panelId={`${id}-panel-${item.id}`} />)}
+    </TabList>
+    {items.map((item) => <div key={item.id} id={`${id}-panel-${item.id}`} role="tabpanel"
+      aria-labelledby={`${id}-tab-${item.id}`} hidden={active !== item.id} tabIndex={0} className="tab-panel">
+      {active === item.id ? children : null}
+    </div>)}
+  </>;
+}
+
+function SetupGuide({ products }) {
+  const [active, setActive] = useState(setups[0].id);
+  const setup = setups.find((item) => item.id === active);
+  const example = products.find((item) => item.code === setup.product);
+
+  return <section className="section" id="guide" aria-labelledby="guide-title">
+    <SectionHeading id="guide-title" title="Как выбрать комплект" />
+    <Card variant="muted" padding={0} className="guide-panel">
+      <SectionTabs id="setup" items={setups} active={active} onChange={setActive} label="Для каких задач нужны аксессуары">
+        <div className="guide-panel__body">
+          <div>
+            <h3>{setup.title}</h3>
+            <p>{setup.text}</p>
+          </div>
+          {example && <div className="guide-panel__example">
+            <ProductImage product={example} />
+            <div>
+              <span>Подходящая модель</span>
+              <strong>{example.name}</strong>
+              <Button variant="secondary" label="Посмотреть модель" href={productURL(example)} />
+            </div>
+          </div>}
+        </div>
+      </SectionTabs>
+    </Card>
+  </section>;
+}
+
+function OrderSteps() {
+  return <section className="section" aria-labelledby="steps-title">
+    <SectionHeading id="steps-title" title="Как проходит заявка">
+      <Button variant="secondary" href="order.html" label="Открыть заявку" />
+    </SectionHeading>
+    <ol className="steps">
+      {orderSteps.map(({ title, text }) => <li key={title}><h3>{title}</h3><p>{text}</p></li>)}
+    </ol>
+  </section>;
 }
 
 export function HomePage({ products }) {
@@ -65,105 +163,108 @@ export function HomePage({ products }) {
   return <>
     <section className="hero" aria-labelledby="home-title">
       <div className="hero__copy">
-        <h1 id="home-title">Компьютерные аксессуары</h1>
-        <p>Клавиатуры, мыши и полезные мелочи для работы, учёбы и игр.</p>
-        <a className="button button--hero" href="catalog.html">Смотреть каталог <Icon name="arrow" size={18} /></a>
+        <h1 id="home-title">Аксессуары для рабочего места</h1>
+        <p>Подберите клавиатуру, мышь и аксессуары под свой стол. Сравните размеры, подключение и комплектацию перед выбором.</p>
+        <div className="actions">
+          <Button label="Смотреть каталог" href="catalog.html" size="lg" variant="primary" endContent={<Icon name="arrow" size={18} />} />
+          <Button label="Как выбрать" href="#guide" size="lg" variant="secondary" />
+        </div>
       </div>
-      <picture className="hero__media">
-        <source media="(min-width: 760px)" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-          sizes="(min-width: 1300px) 700px, 54vw" />
-        <img src="images/desk-640.webp" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-          sizes="100vw" alt="Графитовая клавиатура и беспроводная мышь на настольном коврике"
-          width="1280" height="853" fetchPriority="high" />
-      </picture>
+      <DeskPhoto />
     </section>
-    <section className="section" id="advantages" aria-labelledby="categories-title">
-      <div className="section-heading"><h2 id="categories-title">Категории</h2></div>
+
+    <section className="section section--categories" id="advantages" aria-labelledby="categories-title">
+      <SectionHeading id="categories-title" title="Категории" />
       <ul className="category-grid">
         {categories.map((category) => <li key={category.id}>
-          <a className="category-link" href={categoryURL(category)}>
-            <span className="category-link__icon"><Icon name={category.id} size={24} /></span>
+          <a className="category-link" href={categoryURL(category.id)}>
+            <span className="category-link__icon"><Icon name={category.id} size={25} /></span>
             <span className="category-link__label"><strong>{category.name}</strong><span>{category.description}</span></span>
             <Icon name="arrow" size={18} />
           </a>
         </li>)}
       </ul>
     </section>
+
     <section className="section" id="popular" aria-labelledby="popular-title">
-      <div className="section-heading">
-        <h2 id="popular-title">Популярные товары</h2>
-        <a className="text-link" href="catalog.html">Весь каталог <Icon name="arrow" size={17} /></a>
-      </div>
-      <div className="products-grid">
-        {featured.map((product) => <ProductCard key={product.code} product={product} onQuickOrder={openOrder} />)}
-      </div>
+      <SectionHeading id="popular-title" title="Популярные товары">
+        <Button variant="secondary" href="catalog.html" label="Весь каталог" endContent={<Icon name="arrow" size={17} />} />
+      </SectionHeading>
+      <ProductGrid products={featured} onQuickOrder={openOrder} />
     </section>
-    <section className="section advice" aria-labelledby="advice-title">
-      <h2 id="advice-title">Соберите удобное рабочее место</h2>
-      <div className="advice__grid">
-        <div><h3>Оставьте место для мыши</h3><p>Если цифровой блок нужен редко, компактная клавиатура даст больше свободы на небольшом столе.</p></div>
-        <div><h3>Проверьте разъёмы</h3><p>Уточните, какие порты есть на компьютере. Для USB-периферии и внешнего экрана может пригодиться хаб.</p></div>
-        <div><h3>Подберите форму мыши</h3><p>Для долгой работы важны размер, хват и расположение кнопок. Сравните обычные и эргономичные модели.</p></div>
-      </div>
+
+    <SetupGuide products={products} />
+    <section className="section buying-guide" aria-labelledby="buying-title">
+      <SectionHeading id="buying-title" title="Что проверить перед покупкой" />
+      <InfoCards items={buyingTips} />
     </section>
+    <OrderSteps />
+    <FAQ items={storeFAQ} />
     <QuickOrder products={products} dialog={dialog} selected={selected} />
   </>;
 }
 
-export function CatalogPage({ route, products }) {
+const catalogTabs = [
+  { id: "all", label: "Все товары" },
+  ...categories.map(({ id, name }) => ({ id, label: name })),
+];
+
+function normalize(text) {
+  return text.trim().toLowerCase().replace(/ё/g, "е");
+}
+
+export function CatalogPage({ products }) {
+  const [active, setActive] = useState("all");
   const [query, setQuery] = useState("");
-  const search = query.trim().toLowerCase().replace(/ё/g, "е");
-  const groups = categories.filter((category) => !route.category || route.category === category.id)
-    .map((category) => ({
-      ...category,
-      products: products.filter((product) => product.category === category.id &&
-        `${product.name} ${product.description} ${product.specs.join(" ")}`.toLowerCase().replace(/ё/g, "е").includes(search)),
-    }));
+
+  useEffect(() => {
+    const selected = new URLSearchParams(window.location.search).get("category");
+    if (catalogTabs.some(({ id }) => id === selected)) setActive(selected);
+  }, []);
+
+  const search = normalize(query);
+  const groups = categories.filter(({ id }) => active === "all" || active === id).map((category) => ({
+    ...category,
+    products: products.filter((product) => product.category === category.id &&
+      normalize(`${product.name} ${product.description} ${product.specs.join(" ")}`).includes(search)),
+  }));
   const count = groups.reduce((total, group) => total + group.products.length, 0);
 
   return <>
-    <PageIntro title={route.category ? "Клавиатуры" : "Каталог аксессуаров"}>
-      {route.category
-        ? "Сравните компактные и полноразмерные модели по формату, раскладке и подключению."
-        : "Выберите категорию или найдите конкретную модель по названию."}
-    </PageIntro>
-    <div className="catalog-layout">
-      <aside className="catalog-filters">
-        <nav aria-label="Категории каталога">
-          <h2>Категории</h2>
-          <ul>
-            <li><a href={route.category ? "catalog.html" : "#products"}>Все товары</a></li>
-            {categories.map((category) => <li key={category.id}>
-              <a href={route.category ? categoryURL(category) : `#${category.id}`}
-                aria-current={route.category === category.id ? "page" : undefined}>{category.name}</a>
-            </li>)}
-          </ul>
-        </nav>
-      </aside>
-      <div className="catalog-layout__products" id="products">
-        <div className="catalog-search">
-          <label htmlFor="catalog-search">Поиск по каталогу</label>
-          <div className="catalog-search__input"><Icon name="search" />
-            <input type="search" id="catalog-search" value={query} maxLength={100} placeholder="Например, K-87"
-              onChange={(event) => setQuery(event.target.value)} />
-          </div>
-          <p className="catalog-search__count" role="status">Найдено товаров: {count}</p>
+    <PageIntro title="Каталог аксессуаров">Выберите категорию или найдите модель по названию. В карточках собраны цена, описание и основные характеристики.</PageIntro>
+    <section id="products" aria-label="Поиск и категории товаров">
+      <Card padding={0} className="catalog-controls">
+        <div className="catalog-search" role="search" aria-label="Поиск по каталогу">
+          <TextInput id="catalog-search" label="Поиск по каталогу" type="search" value={query}
+            onChange={setQuery} startIcon={<Icon name="search" />} placeholder="Например, K-87"
+            maxLength={100} width="100%" size="lg" hasClear />
         </div>
-        {count === 0 && <p className="notice">Товары не найдены. Попробуйте другое название.</p>}
-        {groups.map((group) => group.products.length > 0 && <section className="catalog-group" id={group.id} key={group.id}>
-          <div className="section-heading"><h2>{group.name}</h2></div>
-          <div className={route.category ? "products-grid products-grid--compact" : "products-grid"}>
-            {group.products.map((product) => <ProductCard key={product.code} product={product} compact={Boolean(route.category)} />)}
-          </div>
-        </section>)}
-      </div>
-    </div>
+        <SectionTabs id="category" label="Категории каталога" items={catalogTabs} active={active} onChange={setActive}>
+          <p className="catalog-search__count" role="status">Найдено товаров: {count}</p>
+          {count === 0 && <div className="empty-results">
+            <p>По этому запросу товаров нет. Попробуйте код модели или сократите запрос.</p>
+            <Button label="Очистить поиск" onClick={() => setQuery("")} />
+          </div>}
+          {groups.map((group) => group.products.length > 0 &&
+            <section className="catalog-group" id={group.id} key={group.id}>
+              <div className="section-heading"><h2>{group.name}</h2><p>{group.description}</p></div>
+              <ProductGrid products={group.products} />
+            </section>)}
+        </SectionTabs>
+      </Card>
+    </section>
+    <section className="section" aria-labelledby="catalog-tips-title">
+      <SectionHeading id="catalog-tips-title" title="На что смотреть в карточке" />
+      <InfoCards items={buyingTips} />
+    </section>
+    <FAQ items={storeFAQ} />
   </>;
 }
 
-export function ProductPage({ product }) {
+export function ProductPage({ product, products }) {
   const summary = useRef(null);
   const category = categories.find((item) => item.id === product.category);
+  const related = products.filter((item) => item.category === product.category && item.code !== product.code);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("practice") !== "15") return;
@@ -188,21 +289,22 @@ export function ProductPage({ product }) {
           <figcaption>Боковой вид и разъём подключения</figcaption>
         </figure>}
       </div>
-      <div className="product-detail__info">
-        <a className="text-link" href={categoryURL(category)}>{category.name}</a>
+      <Card className="product-detail__info" padding={6}>
+        <a className="text-link" href={categoryURL(category.id)}>{category.name}</a>
         <h1>{product.name}</h1>
         <p>{product.description}</p>
         <ul>{product.specs.map((spec) => <li key={spec}>{spec}</li>)}</ul>
         <div className="product-detail__purchase">
           <p className="stock">{getProductStatus(product)}</p>
           <Price product={product} />
-          {product.inStock && <a className="button button--primary" href={orderURL(product)}>Оформить заявку <Icon name="arrow" size={18} /></a>}
+          {product.inStock && <Button variant="primary" size="lg" href={orderURL(product)} label="Оформить заявку"
+            endContent={<Icon name="arrow" size={18} />} />}
         </div>
         <p className="notice" ref={summary} hidden />
-      </div>
+      </Card>
     </div>
     <section className="section" aria-labelledby="specs-title">
-      <div className="section-heading"><h2 id="specs-title">Характеристики</h2></div>
+      <SectionHeading id="specs-title" title="Характеристики" />
       <div className="table-scroll">
         <table className="specs-table">
           <caption className="sr-only">Технические характеристики модели {product.code}</caption>
@@ -210,66 +312,108 @@ export function ProductPage({ product }) {
         </table>
       </div>
     </section>
-    {product.package && <section className="section panel" aria-labelledby="package-title">
-      <h2 id="package-title">Комплект поставки</h2>
-      <ul>{product.package.map((item) => <li key={item}>{item}</li>)}</ul>
+    <section className="section detail-notes" aria-labelledby="use-title">
+      <Card variant="muted" padding={6}>
+        <h2 id="use-title">Подойдёт ли вам эта модель?</h2>
+        <p>{productTips[product.code]}</p>
+        <Button variant="secondary" href="about.html#feedback" label="Задать вопрос о товаре" />
+      </Card>
+      {product.package && <Card padding={6}>
+        <h2>Комплект поставки</h2>
+        <ul>{product.package.map((item) => <li key={item}>{item}</li>)}</ul>
+      </Card>}
+    </section>
+    {related.length > 0 && <section className="section" aria-labelledby="related-title">
+      <SectionHeading id="related-title" title="Другие товары в категории">
+        <Button variant="secondary" href={categoryURL(category.id)} label="Вся категория" />
+      </SectionHeading>
+      <ProductGrid products={related} related />
     </section>}
+    <FAQ items={[storeFAQ[0], storeFAQ[2], orderFAQ[0]]} />
   </>;
 }
 
 export function OrderPage({ products }) {
   return <>
-    <PageIntro title="Оформить заявку">Выберите модель и оставьте контакты для связи.</PageIntro>
+    <PageIntro title="Оформить заявку">Выберите модель и оставьте контакты. По заявке можно уточнить характеристики товара и способ связи.</PageIntro>
     <div className="form-layout">
-      <section className="panel" aria-labelledby="order-form-title">
-        <h2 id="order-form-title">Данные заявки</h2>
-        <RequestForm products={products} prefix="order" order />
+      <section aria-labelledby="order-form-title">
+        <Card padding={6} className="form-panel">
+          <h2 id="order-form-title">Данные заявки</h2>
+          <RequestForm products={products} prefix="order" order />
+        </Card>
       </section>
-      <aside className="panel panel--muted">
-        <h2>Нужна помощь с выбором?</h2>
-        <p>На странице товара есть характеристики и описание подключения. Если остались вопросы, напишите через форму обратной связи.</p>
-        <a className="text-link" href="contacts.html#feedback">Обратная связь <Icon name="arrow" size={17} /></a>
+      <aside>
+        <Card variant="muted" padding={6} className="form-help">
+          <h2>Нужна помощь с выбором?</h2>
+          <p>Напишите, если сомневаетесь в размере, подключении или комплектации. Код модели из карточки поможет найти нужный товар.</p>
+          <ContactLinks />
+          <Button variant="secondary" href="about.html#feedback" label="Обратная связь" />
+        </Card>
       </aside>
     </div>
-  </>;
-}
-
-export function ContactsPage() {
-  return <>
-    <PageIntro title="Контакты">Задайте вопрос о товаре или заявке через форму обратной связи.</PageIntro>
-    <div className="form-layout">
-      <section className="panel" id="feedback" aria-labelledby="feedback-title">
-        <h2 id="feedback-title">Обратная связь</h2>
-        <RequestForm prefix="feedback" />
-      </section>
-      <aside className="panel panel--muted">
-        <h2>Телефон и почта</h2>
-        <ContactLinks />
-        <p>Контактные данные приведены для демонстрации магазина.</p>
-      </aside>
-    </div>
+    <OrderSteps />
+    <section className="section" aria-labelledby="before-order-title">
+      <SectionHeading id="before-order-title" title="Перед отправкой" />
+      <InfoCards items={[
+        { title: "Сверьте модель", text: "У похожих клавиатур может быть разный формат. Сверьте буквенно-цифровой код в заявке с кодом на странице товара." },
+        { title: "Укажите удобное время", text: "Если в течение дня вы заняты, напишите в комментарии, в какое время вам удобно обсудить заявку." },
+        { title: "Проверьте контакты", text: "Короткая проверка телефона и почты поможет избежать опечатки. Для вопросов о товаре доступна и отдельная форма обратной связи." },
+      ]} />
+    </section>
+    <FAQ items={orderFAQ} />
   </>;
 }
 
 export function AboutPage() {
   return <>
-    <PageIntro title="О магазине">ShopProject — каталог компьютерных аксессуаров для учёбы, работы и игр.</PageIntro>
-    <section className="panel panel--about" aria-labelledby="about-title">
-      <img src="images/desk-640.webp" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-        sizes="(min-width: 760px) 42vw, 100vw" alt="Клавиатура и мышь на рабочем столе" width="640" height="427" />
-      <div>
-        <h2 id="about-title">Что есть в ShopProject</h2>
-        <p>В каталоге девять товаров: компактные и полноразмерные клавиатуры, проводные и беспроводные мыши, USB-C хаб, коврик и настольный микрофон.</p>
-        <p>У каждого товара указаны цена, основные параметры и подходящие сценарии использования. Это помогает подобрать модель под свой компьютер и рабочее место.</p>
-        <a className="button button--primary" href="catalog.html">Открыть каталог <Icon name="arrow" size={18} /></a>
+    <section className="hero hero--about" aria-labelledby="about-title">
+      <div className="hero__copy">
+        <h1 id="about-title">О магазине и контакты</h1>
+        <p>ShopProject собирает компьютерные аксессуары для учёбы, работы и игр. В каталоге можно сверить размеры, разъёмы и комплект перед выбором.</p>
+        <div className="actions">
+          <Button href="#contacts" label="Контакты" variant="primary" size="lg" />
+          <Button href="catalog.html" label="Открыть каталог" variant="secondary" size="lg" />
+        </div>
       </div>
+      <DeskPhoto />
     </section>
+    <section className="section" aria-labelledby="about-details-title">
+      <SectionHeading id="about-details-title" title="Что можно найти в магазине" />
+      <InfoCards items={[
+        { title: "Клавиатуры", text: "Полноразмерные и компактные модели. Указаны раскладка, количество клавиш и разъём подключения." },
+        { title: "Мыши", text: "Проводные и беспроводные, с разными формами корпуса и числом кнопок. В описании есть питание и способ подключения." },
+        { title: "Аксессуары", text: "USB-C хаб, настольный коврик и микрофон. Характеристики помогают понять, что войдёт в комплект и сколько места займёт устройство." },
+      ]} />
+    </section>
+    <section className="section" id="contacts" aria-labelledby="contacts-title">
+      <SectionHeading id="contacts-title" title="Как с нами связаться" />
+      <ContactLinks cards />
+    </section>
+    <section className="section form-layout" id="feedback" aria-labelledby="feedback-title">
+      <div>
+        <SectionHeading id="feedback-title" title="Обратная связь" />
+        <Card padding={6}><RequestForm prefix="feedback" /></Card>
+      </div>
+      <aside>
+        <Card variant="muted" padding={6} className="form-help">
+          <h2>Что указать в сообщении</h2>
+          <ul>
+            <li>Код товара, если вопрос о конкретной модели.</li>
+            <li>Модель компьютера и доступные разъёмы, если нужна помощь с подключением.</li>
+            <li>Номер заявки, если она уже отправлена.</li>
+          </ul>
+          <p>Контактные данные приведены для демонстрации магазина.</p>
+        </Card>
+      </aside>
+    </section>
+    <FAQ items={[storeFAQ[2], storeFAQ[3], orderFAQ[2]]} />
   </>;
 }
 
 export function MissingPage() {
   return <>
     <PageIntro title="Страница не найдена">Возможно, адрес изменился. Попробуйте найти нужный товар в каталоге.</PageIntro>
-    <a className="button button--primary" href="catalog.html">Вернуться в каталог</a>
+    <Button variant="primary" href="catalog.html" label="Вернуться в каталог" />
   </>;
 }

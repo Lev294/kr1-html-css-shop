@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@astryxdesign/core/Button";
 import { calculateFinalPrice, formatPrice, productByCode } from "./data.js";
 import { Icon } from "./layout.jsx";
 
@@ -123,9 +124,8 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
       <input type="checkbox" id={id("consent")} name="consent" required {...fieldError("consent")} />
       <span>Я согласен на обработку указанных данных для ответа на обращение.</span>
     </label>
-    <button className="button button--primary" type="submit" disabled={sending}>
-      {sending ? "Отправляем…" : order ? "Отправить заявку" : "Отправить сообщение"}
-    </button>
+    <Button className="request-form__submit" variant="primary" size="lg" type="submit"
+      isDisabled={sending} label={sending ? "Отправляем…" : order ? "Отправить заявку" : "Отправить сообщение"} />
     {result?.status === "error"
       ? <p className="notice notice--error" id={id("error")} role="alert">{result.text}</p>
       : <p className={result?.status === "success" ? "notice notice--success" : result ? "notice" : "sr-only"} role="status">{result?.text}</p>}
@@ -137,8 +137,8 @@ export function QuickOrder({ products, dialog, selected }) {
   return <dialog className="order-dialog" ref={dialog} aria-labelledby="quick-order-title">
     <div className="order-dialog__header">
       <h2 id="quick-order-title">Оформить заявку</h2>
-      <button className="button button--secondary icon-button" type="button" aria-label="Закрыть заявку"
-        onClick={() => dialog.current.close()}><Icon name="close" /></button>
+      <Button label="Закрыть заявку" variant="secondary" icon={<Icon name="close" />} isIconOnly
+        onClick={() => dialog.current.close()} />
     </div>
     <RequestForm key={selected} products={products} prefix="quick" productCode={selected} order callback />
   </dialog>;
