@@ -21,7 +21,7 @@ const pages = [
     description: "Девять компьютерных аксессуаров ShopProject: механические и мембранные клавиатуры, мыши, USB-C хаб, коврик и микрофон.",
     crumbs: [homeCrumb] },
   { file: "about.html", view: "about", name: "О магазине и контакты",
-    description: "О магазине ShopProject. Телефон, часы работы, электронная почта и форма обратной связи.",
+    description: "О магазине ShopProject, ассортименте, часах работы и способах связи.",
     crumbs: [homeCrumb] },
   { file: "order.html", view: "order", name: "Заявка",
     description: "Выберите аксессуар и оставьте контактные данные для оформления заявки в ShopProject.",

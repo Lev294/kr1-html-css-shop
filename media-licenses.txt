@@ -1,0 +1,42 @@
+Лицензии изображений ShopProject
+Фотографии подготовлены для сайта: изменены размеры и кадрирование.
+
+keyboard-k87.webp — Triple-green, CC BY 2.0
+https://commons.wikimedia.org/wiki/File:Keychron_K8_Non-Backlight_Wireless_Mechanical_Keyboard_-_52766711146_(cropped).jpg
+https://creativecommons.org/licenses/by/2.0/
+
+keyboard-k104.webp — TaurusEmerald, CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:Logitech_K120_Keyboard.jpg
+https://creativecommons.org/licenses/by-sa/4.0/
+
+keyboard-k68.webp — Saad Jameel, Unsplash License
+https://unsplash.com/photos/a-keyboard-on-a-table-Y8jbT7CZuq0
+https://unsplash.com/license
+
+mouse-m12.webp — Hayden Schiff, CC BY 4.0
+https://commons.wikimedia.org/wiki/File:Logitech_M185_mouse_HS03.jpg
+https://creativecommons.org/licenses/by/4.0/
+
+mouse-m24.webp — MarcT.11, CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:Rat%C3%B3n_Logitech_G502.jpg
+https://creativecommons.org/licenses/by-sa/4.0/
+
+mouse-m8.webp — Jacek Halicki, CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:2017_Mysz_komputerowa_Logitech_MX_Master.jpg
+https://creativecommons.org/licenses/by-sa/4.0/
+
+hub-h6.webp — Khalid Bencherifa, CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:USB-C_Hubb_5_portar.jpg
+https://creativecommons.org/licenses/by-sa/4.0/
+
+mat-s100.webp — Alex de Koning, Unsplash License
+https://unsplash.com/photos/mechanical-keyboard-glasses-and-mouse-on-a-beige-desk-mat-VuxOlb5GjCk
+https://unsplash.com/license
+
+microphone-u2.webp — Guillaume Pasquier, CC0 1.0
+https://commons.wikimedia.org/wiki/File:Blue_Yeti_Blackout_USB_microphone_(51844234538).jpg
+https://creativecommons.org/publicdomain/zero/1.0/
+
+desk-1280.webp, desk-640.webp, desk-social.jpg — Kofi Nartey, Unsplash License
+https://unsplash.com/photos/a-computer-mouse-and-keyboard-on-a-desk-X2ZYZZnfm9U
+https://unsplash.com/license

@@ -5,7 +5,7 @@ import { navigation } from "./routes.js";
 const icons = {
   brand: <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 9h8M8 15h4" /></>,
   arrow: <path d="M4 12h15m-6-6 6 6-6 6" />,
-  close: <path d="m6 6 12 12M18 6 6 18" />,
+  bag: <><path d="M5 8h14l1 13H4L5 8Z" /><path d="M9 10V6a3 3 0 0 1 6 0v4" /></>,
   mail: <><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m3 6 9 7 9-7" /></>,
   phone: <path d="m5 3 4 1 1 5-2 2a15 15 0 0 0 5 5l2-2 5 1 1 4c0 2-2 2-3 2C10 20 4 14 3 6c0-1 0-3 2-3Z" />,
   clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
@@ -61,10 +61,16 @@ export function Breadcrumbs({ route }) {
   </nav>;
 }
 
+const shopPhone = import.meta.env.VITE_SHOP_PHONE?.trim();
+const shopEmail = import.meta.env.VITE_SHOP_EMAIL?.trim();
 const contacts = [
-  { icon: "phone", label: "Телефон", text: "+7 (900) 000-00-00", href: "tel:+79000000000" },
+  shopPhone
+    ? { icon: "phone", label: "Телефон", text: shopPhone, href: `tel:${shopPhone.replace(/[^+\d]/g, "")}` }
+    : { icon: "bag", label: "Заказы", text: "Оформить заявку", href: "order.html" },
   { icon: "clock", label: "Часы работы", text: "Ежедневно, 10:00–20:00 МСК" },
-  { icon: "mail", label: "Электронная почта", text: "info@example.com", href: "mailto:info@example.com" },
+  shopEmail
+    ? { icon: "mail", label: "Электронная почта", text: shopEmail, href: `mailto:${shopEmail}` }
+    : { icon: "mail", label: "Вопросы о товарах", text: "Связаться с магазином", href: "about.html#feedback" },
 ];
 
 export function ContactLinks({ cards = false }) {
@@ -99,7 +105,6 @@ export function Footer({ route }) {
     </div>
     <div className="container site-footer__bottom">
       <span>© 2026 ShopProject</span>
-      <a href="licenses/photos.txt">Источники фотографий</a>
     </div>
   </footer>;
 }

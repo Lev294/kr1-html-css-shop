@@ -1,25 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@astryxdesign/core/Button";
 import { calculateFinalPrice, formatPrice, productByCode } from "./data.js";
-import { Icon } from "./layout.jsx";
 
 export const staticOnly = import.meta.env.VITE_STATIC_ONLY === "1";
 
-export function RequestForm({ products, prefix, productCode = "", order = false, callback = false }) {
-  const [selected, setSelected] = useState(productCode);
+export function RequestForm({ products, prefix, order = false }) {
+  const [selected, setSelected] = useState("");
   const [result, setResult] = useState(null);
   const [sending, setSending] = useState(false);
+  const [ready, setReady] = useState(!staticOnly);
   const pending = useRef(false);
   const form = useRef(null);
   const id = (name) => `${prefix}-${name}`;
   const product = products?.find((item) => item.code === selected);
   const notesField = order ? "comment" : "message";
+  const submitLabel = `${staticOnly ? "Подготовить" : "Отправить"} ${order ? "заявку" : "сообщение"}`;
 
   useEffect(() => {
-    if (prefix !== "order") return;
+    if (staticOnly) setReady(true);
+    if (!order) return;
     const code = new URLSearchParams(window.location.search).get("product");
-    setSelected(productByCode(code)?.code || "");
-  }, [prefix]);
+    const requested = productByCode(code);
+    if (requested?.inStock) setSelected(requested.code);
+  }, [order]);
 
   useEffect(() => {
     if (result?.field) form.current.elements.namedItem(result.field)?.focus();
@@ -37,7 +40,21 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
     body.consent = fields.has("consent");
 
     if (staticOnly) {
-      setResult({ status: "info", text: "Форма заполнена. В демоверсии данные не отправляются." });
+      if (order && !product?.inStock) {
+        setResult({ status: "error", field: "product", text: "Выберите товар в наличии." });
+        return;
+      }
+      if (order && !/^[78]\d{10}$/.test(body.phone.replace(/[\s()+-]/g, ""))) {
+        setResult({ status: "error", field: "phone", text: "Введите телефон из 11 цифр, начиная с +7 или 8." });
+        return;
+      }
+      const contactLines = [`Имя: ${body.name}`, `Почта: ${body.email}`];
+      const lines = order
+        ? ["Заявка ShopProject", `Товар: ${product.name}`, `Стоимость: ${formatPrice(calculateFinalPrice(product))}`,
+            ...contactLines, `Телефон: ${body.phone}`, `Комментарий: ${body.comment}`]
+        : ["Сообщение для ShopProject", ...contactLines, "", body.message];
+      setResult({ status: "info", text: order ? "Заявка готова." : "Сообщение готово.",
+        file: `data:text/plain;charset=utf-8,${encodeURIComponent(lines.join("\n"))}` });
       return;
     }
     pending.current = true;
@@ -58,7 +75,7 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
         return;
       }
       form.current.reset();
-      if (order) setSelected(productCode);
+      if (order) setSelected("");
       setResult({ status: "success", text: order
         ? `Заявка ${data.id} принята. Стоимость товара: ${formatPrice(data.total)}.`
         : `Сообщение ${data.id} принято.` });
@@ -71,8 +88,8 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
   }
 
   return <form className="request-form" ref={form} method="post"
-    action={order ? "/api/orders" : "/api/messages"} onSubmit={submit}>
-    {staticOnly && <p className="notice">Здесь можно проверить форму на демонстрационных данных.</p>}
+    action={order ? "/api/orders" : "/api/messages"} onSubmit={submit}
+    onChange={() => { if (result) setResult(null); }}>
     {order && <div className="field">
       <label htmlFor={id("product")}>Товар</label>
       <select id={id("product")} name="product" value={selected}
@@ -82,7 +99,10 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
           {item.name} · {formatPrice(calculateFinalPrice(item))}
         </option>)}
       </select>
-      {product && <p className="field__hint">Стоимость товара: {formatPrice(calculateFinalPrice(product))}</p>}
+      {product && <div className="form-selected">
+        <img src={product.image} alt="" width="96" height="72" />
+        <span><strong>{product.name}</strong><span>{formatPrice(calculateFinalPrice(product))}</span></span>
+      </div>}
     </div>}
     <div className="form-grid">
       <div className="field">
@@ -99,21 +119,8 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
     {order && <div className="field">
       <label htmlFor={id("phone")}>Телефон</label>
       <input id={id("phone")} name="phone" type="tel" autoComplete="tel" minLength={11} maxLength={24}
-        placeholder="+7 (900) 000-00-00" aria-describedby={id("phone-hint")} required {...fieldError("phone")} />
+        aria-describedby={id("phone-hint")} required {...fieldError("phone")} />
       <p className="field__hint" id={id("phone-hint")}>11 цифр, начиная с +7 или 8.</p>
-    </div>}
-    {callback && <div className="form-grid">
-      <div className="field">
-        <label htmlFor={id("date")}>Дата связи (необязательно)</label>
-        <input id={id("date")} name="date" type="date" {...fieldError("date")} />
-      </div>
-      <div className="field">
-        <label htmlFor={id("topic")}>Тема заявки</label>
-        <select id={id("topic")} name="topic" {...fieldError("topic")}>
-          <option value="order">Заказ товара</option>
-          <option value="question">Вопрос о товаре</option>
-        </select>
-      </div>
     </div>}
     <div className="field">
       <label htmlFor={id(notesField)}>{order ? "Комментарий (необязательно)" : "Сообщение"}</label>
@@ -125,21 +132,13 @@ export function RequestForm({ products, prefix, productCode = "", order = false,
       <span>Я согласен на обработку указанных данных для ответа на обращение.</span>
     </label>
     <Button className="request-form__submit" variant="primary" size="lg" type="submit"
-      isDisabled={sending} label={sending ? "Отправляем…" : order ? "Отправить заявку" : "Отправить сообщение"} />
+      isDisabled={sending || !ready} label={sending ? "Отправляем…" : submitLabel} />
     {result?.status === "error"
       ? <p className="notice notice--error" id={id("error")} role="alert">{result.text}</p>
       : <p className={result?.status === "success" ? "notice notice--success" : result ? "notice" : "sr-only"} role="status">{result?.text}</p>}
-    <noscript><p className="notice">Для отправки формы включите JavaScript.</p></noscript>
+    {result?.file && <a className="form-download" href={result.file} download={order ? "shopproject-order.txt" : "shopproject-message.txt"}>
+      {order ? "Скачать заявку" : "Скачать сообщение"}
+    </a>}
+    <noscript><p className="notice">Для работы формы включите JavaScript.</p></noscript>
   </form>;
-}
-
-export function QuickOrder({ products, dialog, selected }) {
-  return <dialog className="order-dialog" ref={dialog} aria-labelledby="quick-order-title">
-    <div className="order-dialog__header">
-      <h2 id="quick-order-title">Оформить заявку</h2>
-      <Button label="Закрыть заявку" variant="secondary" icon={<Icon name="close" />} isIconOnly
-        onClick={() => dialog.current.close()} />
-    </div>
-    <RequestForm key={selected} products={products} prefix="quick" productCode={selected} order callback />
-  </dialog>;
 }
