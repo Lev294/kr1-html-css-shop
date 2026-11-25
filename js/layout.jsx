@@ -4,9 +4,6 @@ import { navigation } from "./routes.js";
 
 const icons = {
   brand: <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 9h8M8 15h4" /></>,
-  keyboards: <><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h8" /></>,
-  mice: <><rect x="6" y="2" width="12" height="20" rx="6" /><path d="M12 6v4" /></>,
-  accessories: <><path d="m12 3 9 5-9 5-9-5 9-5ZM3 8v8l9 5 9-5V8M12 13v8" /></>,
   arrow: <path d="M4 12h15m-6-6 6 6-6 6" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   mail: <><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m3 6 9 7 9-7" /></>,
@@ -91,16 +88,19 @@ export function Footer({ route }) {
         <Brand />
         <p>Клавиатуры, мыши и аксессуары<br />для рабочего места.</p>
       </div>
-      <nav className="site-footer__nav" aria-label="Навигация в подвале">
-        <p className="site-footer__label">Навигация</p>
+      <nav className="site-footer__nav" aria-labelledby="footer-navigation">
+        <h2 className="site-footer__label" id="footer-navigation">Навигация</h2>
         <Navigation route={route} />
       </nav>
       <div>
-        <p className="site-footer__label">Контакты</p>
+        <h2 className="site-footer__label">Контакты</h2>
         <ContactLinks />
       </div>
     </div>
-    <div className="container site-footer__bottom">© 2026 ShopProject</div>
+    <div className="container site-footer__bottom">
+      <span>© 2026 ShopProject</span>
+      <a href="licenses/photos.txt">Источники фотографий</a>
+    </div>
   </footer>;
 }
 
