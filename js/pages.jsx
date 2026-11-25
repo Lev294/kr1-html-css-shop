@@ -27,7 +27,7 @@ function DeskPhoto() {
     <source media="(min-width: 760px)" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
       sizes="(min-width: 1280px) 540px, 47vw" />
     <img src="images/desk-640.webp" srcSet="images/desk-640.webp 640w, images/desk-1280.webp 1280w"
-      sizes="100vw" alt="Графитовая клавиатура и беспроводная мышь на настольном коврике"
+      sizes="100vw" alt="Клавиатура и мышь на рабочем столе"
       width="1280" height="854" fetchPriority="high" />
   </picture>;
 }
@@ -161,9 +161,9 @@ export function HomePage({ products }) {
   }
 
   return <>
-    <section className="hero" aria-labelledby="home-title">
+    <section className="hero hero--home" aria-labelledby="home-title">
       <div className="hero__copy">
-        <h1 id="home-title">Аксессуары для рабочего места</h1>
+        <h1 id="home-title">Всё для <span>рабочего стола</span></h1>
         <p>Подберите клавиатуру, мышь и аксессуары под свой стол. Сравните размеры, подключение и комплектацию перед выбором.</p>
         <div className="actions">
           <Button label="Смотреть каталог" href="catalog.html" size="lg" variant="primary" endContent={<Icon name="arrow" size={18} />} />
@@ -178,9 +178,11 @@ export function HomePage({ products }) {
       <ul className="category-grid">
         {categories.map((category) => <li key={category.id}>
           <a className="category-link" href={categoryURL(category.id)}>
-            <span className="category-link__icon"><Icon name={category.id} size={25} /></span>
-            <span className="category-link__label"><strong>{category.name}</strong><span>{category.description}</span></span>
-            <Icon name="arrow" size={18} />
+            <img className="category-link__photo" src={category.image} alt="" width="640" height="400" loading="lazy" decoding="async" />
+            <span className="category-link__caption">
+              <span className="category-link__label"><strong>{category.name}</strong><span>{category.description}</span></span>
+              <span className="category-link__arrow"><Icon name="arrow" size={19} /></span>
+            </span>
           </a>
         </li>)}
       </ul>
@@ -285,8 +287,8 @@ export function ProductPage({ product, products }) {
         <ProductImage product={product} eager />
         {product.code === "K-87" && <figure>
           <img className="product-image" src="images/keyboard-k87-side.svg"
-            alt="Боковой профиль K-87: наклон корпуса и разъём USB-C" width="640" height="400" loading="lazy" decoding="async" />
-          <figcaption>Боковой вид и разъём подключения</figcaption>
+            alt="Схема корпуса клавиатуры в профиль и разъёма USB-C" width="640" height="400" loading="lazy" decoding="async" />
+          <figcaption>Схема корпуса и разъёма подключения</figcaption>
         </figure>}
       </div>
       <Card className="product-detail__info" padding={6}>

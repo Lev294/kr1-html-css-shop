@@ -3,9 +3,9 @@ import products from "../data/products.json";
 export { products };
 
 export const categories = [
-  { id: "keyboards", name: "Клавиатуры", description: "От компактных до полноразмерных" },
-  { id: "mice", name: "Мыши", description: "Проводные и беспроводные" },
-  { id: "accessories", name: "Аксессуары", description: "Хабы, коврики и микрофоны" },
+  { id: "keyboards", name: "Клавиатуры", description: "От компактных до полноразмерных", image: "images/category-keyboards.webp" },
+  { id: "mice", name: "Мыши", description: "Проводные и беспроводные", image: "images/category-mice.webp" },
+  { id: "accessories", name: "Аксессуары", description: "Хабы, коврики и микрофоны", image: "images/hub-h6.webp" },
 ];
 
 export function categoryURL(id) {
