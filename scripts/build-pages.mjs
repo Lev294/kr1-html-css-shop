@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { calculateFinalPrice, render, routes } from "../.ssr/entry-server.js";
+import { calculateFinalPrice, redirects, render, routes } from "../.ssr/entry-server.js";
 
 const site = new URL(process.env.SITE_URL || "https://lev294.github.io/kr1-html-css-shop/");
 site.pathname = site.pathname.replace(/\/?$/, "/");
@@ -62,6 +62,24 @@ for (const route of routes) {
     .replace("<!--page-meta-->", () => meta)
     .replace("<!--app-->", () => render(route));
   await writeFile(`dist/${route.file}`, html);
+}
+
+// Старые адреса остаются рабочими и не дублируют содержимое в поиске.
+for (const [file, redirect] of Object.entries(redirects)) {
+  const target = escapeHTML(redirect.href);
+  await writeFile(`dist/${file}`, `<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHTML(redirect.label)} — ShopProject</title>
+  <meta name="robots" content="noindex, follow">
+  <meta http-equiv="refresh" content="0; url=${target}">
+  <link rel="canonical" href="${escapeHTML(canonical(redirect.canonical))}">
+</head>
+<body><main><a href="${target}">${escapeHTML(redirect.label)}</a></main></body>
+</html>
+`);
 }
 
 const urls = routes.filter((route) => !route.noindex)

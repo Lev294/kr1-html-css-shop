@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import App from "./App.jsx";
-export { routes } from "./routes.js";
+export { redirects, routes } from "./routes.js";
 export { calculateFinalPrice } from "./data.js";
 
 export function render(route) {
