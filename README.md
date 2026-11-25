@@ -29,7 +29,7 @@ GitHub Pages публикует статическую сборку React. На 
 | №14. Мобильные устройства | Вёрстка по принципу Mobile First. На узком экране три ссылки меню расположены под логотипом и кнопкой заявки. Карточки и поля идут в одну колонку. Для вкладок предусмотрена горизонтальная прокрутка внутри блока. Таблица переносит длинный текст внутри ячеек. | `css/responsive.css`, `css/style.css` |
 | №15. Go и функции JavaScript | Go отдаёт каталог, проверяет заявки и обращения и сохраняет их в JSON. В JavaScript выполнены расчёт скидки и цены, форматирование, статус товара и краткое описание. | `backend/`, `data/products.json`, `js/data.js`, страница K-87 с параметром `?practice=15` |
 
-Официальная тема Astryx Butter подключена через пакеты `@astryxdesign/core` и `@astryxdesign/theme-butter`. В интерфейсе используются готовые `Button`, `Card`, `TabList` и `TextInput`. Сетка страниц и отступы магазина описаны отдельно. [Тема Astryx Butter](https://github.com/meta/astryx/tree/main/packages/themes/butter)
+Официальная тема Astryx Butter подключена через пакеты `@astryxdesign/core` и `@astryxdesign/theme-butter`. В интерфейсе используются готовые `Button`, `Card`, `TabList` и `TextInput`. Сетка страниц и отступы магазина описаны отдельно. Тексты лицензий темы и шрифтов собраны в `public/licenses/`. [Тема Astryx Butter](https://github.com/meta/astryx/tree/main/packages/themes/butter)
 
 Для фото рабочего стола использован ImageGen с описанием графитовой клавиатуры и мыши на тёмно-синем коврике. Фото сохранено в двух WebP-размерах и в JPEG для Open Graph.
 
@@ -87,7 +87,7 @@ css/                 оформление и мобильная раскладк
 data/products.json   каталог для React и Go
 backend/             HTTP-сервер и обработчики форм
 scripts/             формирование HTML и SEO при сборке
-public/              изображения и favicon
+public/              изображения, favicon и лицензии
 lighthouse/          сохранённые отчёты
 ```
 
